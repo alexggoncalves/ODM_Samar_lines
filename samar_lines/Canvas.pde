@@ -1,26 +1,37 @@
 class Canvas {
-  PGraphics pg;
+  PGraphics canvas;
+  LocalFrame localFrame;
   LineGenerator line;
   
-  Canvas(int w, int h){
-   pg = createGraphics(w,h); 
-   line = new LineGenerator(w/2,h/2);
-   
+  Canvas(int w, int h, LocalFrame localFrame){
+   canvas = createGraphics(w,h); 
+   line = new LineGenerator(10,10);
+   this.localFrame = localFrame;
   }
   
   void drawCanvas(){
     line.move();
-    pg.beginDraw();
-    pg.fill(255,0,0);
-    pg.noStroke();
-    pg.rect(line.position.x,line.position.y,10,5);
     
-    pg.endDraw();
     
-    image(pg,line.position.x - pg.width/2 ,line.position.y - pg.height/2);
+    canvas.beginDraw();
+      line.render(canvas);
+    canvas.endDraw();
+    image(canvas,0,0,width,height);
     
+    localFrame.setFrame(canvas,line.position);
+    line.drawDebug();
+    
+    // Draw square around the window
     noFill();
-    stroke(0,0,0);  
-    rect(line.position.x - pg.width/2, line.position.y - pg.height/2,pg.width,pg.height);
+    stroke(0,0,0);
+    rect(0,0,width,height);
+  }
+  
+  void dispose(){
+    this.dispose();
+  }
+  
+  void setDirection(int x, int y){
+    line.direction.set(x,y);
   }
 }
