@@ -1,2 +1,2 @@
-samar_lines/hand_and_face_tracking/venv/
-samar_lines/hand_and_face_tracking/.idea/
+/samar_lines/hand_and_face_tracking/venv/
+/samar_lines/hand_and_face_tracking/.idea/
