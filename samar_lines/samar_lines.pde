@@ -1,21 +1,29 @@
+final boolean FULLSCREEN = true;
+final int MAIN_SCREEN = 0;
+final int SECONDARY_SCREEN = 1;
+
 LocalFrame localFrame;
 Tracking tracking;
 Canvas canvas;
 
-float angle = 0;
-PVector position = new PVector(0,0);
-PVector direction = new PVector(1,0);
+float canvasScale = 7;
+int frameWidth = 480;
+int frameHeight = 270;
 
-int canvasWidth = 5000;
-int canvasHeight = 5000;
+void settings(){
+  if(FULLSCREEN){
+    fullScreen(P2D,SECONDARY_SCREEN);
+  } else {
+    size(frameWidth, frameHeight,P2D);
+  }
+}
 
-void setup(){ 
-  size(600, 600);
+void setup(){
   
   tracking = new Tracking(this);
   
-  localFrame = new LocalFrame(0,0,0,canvasWidth/10,canvasHeight/10);
-  canvas = new Canvas(canvasWidth,canvasHeight, localFrame);
+  localFrame = new LocalFrame(0,0,0,frameWidth,frameHeight);
+  canvas = new Canvas((int)canvasScale * frameWidth,(int)canvasScale * frameHeight, localFrame);
 }
 
 void draw(){
