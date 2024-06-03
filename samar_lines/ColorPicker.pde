@@ -40,7 +40,6 @@ class ColorPicker {
       transitionProgress += transitionRate;
       
       if(transitionProgress >= gradientStep){
-        
         isInTransition = false;
         transitionProgress = 0;
       }

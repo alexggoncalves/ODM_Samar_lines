@@ -6,8 +6,7 @@ class Tracking{
   boolean isConnected;
   ArrayList<PVector> hands = new ArrayList<PVector>();
   ArrayList<PVector> faces = new ArrayList<PVector>();;
-  
-  
+
   int captureWidth = 0;
   int captureHeight = 0;
   Tracking(PApplet parent){
@@ -15,20 +14,16 @@ class Tracking{
   }
   
   void receiveData(){ 
-    if(client != null && !isConnected){
-      client = server.available();
-    }
-    
+    client = server.available();
     if (client !=null) {
-      isConnected = true;
+      
       String receivedData = client.readStringUntil('\n');
+      println(receivedData);
       if (receivedData != null) {
         receivedData.trim();
         receivedData = receivedData.substring(1,receivedData.length()-2);
         parseData(receivedData);
       } 
-    } else {
-      isConnected = false;
     }
   }
   

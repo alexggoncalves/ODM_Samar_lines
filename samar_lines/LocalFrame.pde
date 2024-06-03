@@ -5,6 +5,8 @@ import java.awt.Rectangle;
 class LocalFrame extends PApplet {
   PApplet parent;
   int id, x, y, w, h;
+  float wScale = 0;
+  float hScale = 0;
   int bckColor = color(255, 255, 255); // Set a default background color
   
   PImage frame;
@@ -49,14 +51,60 @@ class LocalFrame extends PApplet {
   }
 
   void setFrame(PGraphics canvas, PVector position) {
-    int x1 = constrain(floor(position.x - w / 2), 0, canvas.width - 1);
-    int y1 = constrain(floor(position.y - h / 2), 0, canvas.height - 1);
-    int x2 = constrain(floor(position.x + w / 2), 0, canvas.width - 1);
-    int y2 = constrain(floor(position.y + h / 2), 0, canvas.height - 1);
+    wScale = (float) w/canvas.width;
+    hScale = (float) h/canvas.height;
+    int x1 = round(position.x - w / 2);
+    int y1 = round(position.y - h / 2);
+    int x2 = round(position.x + w / 2);
+    int y2 = round(position.y + h / 2);
     
-    synchronized (frame) { // Synchronize to avoid concurrent access issues
-      frame.copy(canvas, x1, y1, x2 - x1, y2 - y1, 0, 0, w, h);
+    // Check for limits and set exceeding offset in the x axis
+    int xOffset1 = 0;
+    int xOffset2 = 0;
+    if(x1 < 0){
+      xOffset1 = -x1;
+      x1 = 0;
+    }else if(x2 > canvas.width){
+      xOffset2 = x2 - canvas.width;
+      x2 = canvas.width;
     }
+    
+    // Check for limits and set exceeding offset in the y axis
+    int yOffset1 = 0;
+    int yOffset2 = 0;
+    if(y1 < 0){
+      yOffset1 = - y1;
+      y1 = 0;
+    } else if(y2> canvas.height){
+      yOffset2 = y2 - canvas.height;
+      y2 = canvas.height;
+    }
+    
+    // Source (canvas)
+    int sourceX = x1;
+    int sourceY = y1;
+    int sourceW = x2 - x1;
+    int sourceH = y2 - y1;
+    // Destination (frame)
+    int destX = round(xOffset1);
+    int destY = round(yOffset1);
+    int destW = w - round((xOffset1 + xOffset2));
+    int destH = h - round((yOffset1 + yOffset2));
+  
+    synchronized (frame) { // Synchronize to avoid concurrent access issues
+      frame.copy(canvas,
+                 sourceX, sourceY, sourceW, sourceH,
+                 destX, destY, destW, destH
+      );
+    }
+    
+    //if(xOffset1 != 0) {
+    // frame.copy(canvas,
+    //             sourceX, sourceY, sourceW, sourceH,
+    //             destX, destY, destW, destH
+    //  ); 
+    //}
+    
   }
   
   void disposeFromApp(){

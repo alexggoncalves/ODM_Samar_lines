@@ -2,8 +2,9 @@ class LineGenerator {
   // Movement
   PVector position;
   float speed = 3;
+  int lineRadius = 10;
   float turnRate = 0.2f;
-  int turnRadius = 10;
+  int turnRadius = 14;
   
   // Directions
   final PVector up = new PVector(0, -1);
@@ -67,6 +68,8 @@ class LineGenerator {
       // Move in a straight line
       position.x += currentDirection.x * speed;
       position.y += currentDirection.y * speed;
+      
+      checkBoundaries();
     }
     
     // Set color
@@ -80,9 +83,25 @@ class LineGenerator {
     canvas.beginDraw();
     canvas.fill(currentColor);
     canvas.noStroke();
-    canvas.ellipse(position.x, position.y, 10, 10);
+    canvas.ellipse(position.x, position.y, lineRadius*2, lineRadius*2);
     canvas.endDraw();
   }
+  
+  void checkBoundaries(){
+    // Check horizontal boundaries
+    if (position.x - lineRadius > canvas.getWidth()) {
+      position.x = - lineRadius;
+    } else if (position.x + lineRadius < 0) {
+      position.x = canvas.getWidth() + lineRadius;
+    }
+    // Check vertical boundaries
+    if (position.y - lineRadius > canvas.getHeight()) {
+      position.y = - lineRadius;
+    } else if (position.y + lineRadius < 0) {
+      position.y = canvas.getHeight() + lineRadius;
+    }
+  }
+    
 
   void handleTurns() {
     // If the direction changes and the line is not currently turning, start the turn

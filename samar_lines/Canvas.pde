@@ -5,7 +5,7 @@ class Canvas {
   
   Canvas(int w, int h, LocalFrame localFrame){
    canvas = createGraphics(w,h); 
-   line = new LineGenerator(1000,1000);
+   line = new LineGenerator(500,1000);
    this.localFrame = localFrame;
   }
   
@@ -26,6 +26,13 @@ class Canvas {
     //noFill();
     //stroke(0,0,0);
     //rect(line.position.x,line.position.y,width/canvasScale,height/canvasScale);
+  }
+  
+  int getWidth(){
+    return canvas.width;
+  }
+  int getHeight(){
+    return canvas.height;
   }
   
   void dispose(){
