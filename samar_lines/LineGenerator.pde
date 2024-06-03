@@ -1,17 +1,19 @@
-final PVector up = new PVector(0, -1);
-final PVector right = new PVector(1, 0);
-final PVector down = new PVector(0, 1);
-final PVector left = new PVector(-1, 0);
-
 class LineGenerator {
+  // Movement
   PVector position;
   float speed = 3;
   float turnRate = 0.2f;
-
+  int turnRadius = 10;
+  
+  // Directions
+  final PVector up = new PVector(0, -1);
+  final PVector right = new PVector(1, 0);
+  final PVector down = new PVector(0, 1);
+  final PVector left = new PVector(-1, 0);
   PVector currentDirection;
   PVector lastDirection;
 
-  int turnRadius = 10;
+  // Turns
   boolean isTurning = false;
   PVector turnPivotPoint = new PVector(0, 0);
   String rotationDirection = "";
@@ -19,13 +21,17 @@ class LineGenerator {
   float currenRelativeRotation;
   float initialAngle = 0;
 
+  // Colors
   color currentColor;
+  ColorPicker colorPicker;
 
   LineGenerator(float initX, float initY) {
     position = new PVector(initX, initY);
     currentColor = color(255, 0, 0);
     currentDirection = right;
     lastDirection = right;
+    colorPicker = new ColorPicker("resources/gradient.png");
+    
   }
 
   void update() {
@@ -62,14 +68,20 @@ class LineGenerator {
       position.x += currentDirection.x * speed;
       position.y += currentDirection.y * speed;
     }
-    currentColor = color(red(currentColor)-0.01,0,0);
+    
+    // Set color
+    colorPicker.update();
+    currentColor = colorPicker.getCurrentColor();
+    
     lastDirection = currentDirection;
   }
 
   void render(PGraphics canvas) {
+    canvas.beginDraw();
     canvas.fill(currentColor);
     canvas.noStroke();
     canvas.ellipse(position.x, position.y, 10, 10);
+    canvas.endDraw();
   }
 
   void handleTurns() {
@@ -91,9 +103,15 @@ class LineGenerator {
         turnPivotVector = new PVector(lastDirection.y, -lastDirection.x); // 90 degree right turn
       } else if (crossProduct == 0) {
         rotationAmount = PI;
-        // Choose rotation direction randomly and decide the offset vector based on it
-        rotationDirection = "clockwise";
-        turnPivotVector = new PVector(lastDirection.y, -lastDirection.x); // 90 degree right turn
+        float diceRoll = random(1);
+        // If the change in direction is an angle of 180 degrees choose random direction to turn to
+        if(diceRoll < 0.5) {
+           rotationDirection = "clockwise";
+           turnPivotVector = new PVector(lastDirection.y, -lastDirection.x);  // 180 degree right turn
+        } else {
+           rotationDirection = "counterclockwise";
+           turnPivotVector = new PVector(-lastDirection.y, lastDirection.x); // 180 degree left turn
+        }
       }
 
       // Calculate the pivot point
@@ -101,8 +119,8 @@ class LineGenerator {
       turnPivotPoint = PVector.add(position, turnPivotVector);
 
       // Calculate the initial angle relative to the pivot point
-      PVector V = PVector.sub(position, turnPivotPoint);
-      initialAngle = atan2(V.y, V.x); // Correctly calculate the initial angle
+      PVector temp = PVector.sub(position, turnPivotPoint);
+      initialAngle = atan2(temp.y, temp.x); // Correctly calculate the initial angle
     }
   }
 

@@ -3,18 +3,20 @@ import java.awt.GraphicsDevice;
 import java.awt.Rectangle;
 
 class LocalFrame extends PApplet {
+  PApplet parent;
   int id, x, y, w, h;
   int bckColor = color(255, 255, 255); // Set a default background color
   
   PImage frame;
 
-  LocalFrame(int id, int x, int y, int w, int h) {
+  LocalFrame(PApplet parent, int id, int x, int y, int w, int h) {
     super();
     this.id = id;
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.parent = parent;
     
     frame = createImage(w, h, RGB); // Initialize with the correct size and type
 
@@ -23,36 +25,25 @@ class LocalFrame extends PApplet {
 
   void settings() {
     // Set the size
-    fullScreen();
-    //size(w, h);
+    if(FULLSCREEN){
+      fullScreen(SECONDARY_SCREEN);
+    } else {
+      size(windowedWidth, windowedHeight);
+    }
+    
+    registerMethod("disposeFromApp", this);
    
     smooth(0);
   }
 
-  void setup() {
-    windowMove(x, y);
-    windowResizable(false);
-    // Get the graphics environment
-    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    GraphicsDevice[] screens = ge.getScreenDevices();
-
-    // Choose the screen index (0 for primary screen, 1 for secondary screen, etc.)
-    int screenIndex = 1; // Change this to the index of the desired screen
-
-    if (screenIndex < screens.length) {
-    Rectangle screenBounds = screens[screenIndex].getDefaultConfiguration().getBounds();
-    // Set the location of the window
-    surface.setLocation(screenBounds.x, screenBounds.y); // Adjust offset as needed
-  } else {
-    println("Screen index out of range.");
-  }
-  }
-
   void draw() {
     background(bckColor);
+    fill(0,255,0);
+    rect(100,100,200,200);
+    
     synchronized (frame) { // Synchronize to avoid concurrent access issues
       image(frame, 0, 0, width, height);
-    }
+    } 
     String txt = String.format("Frame   %6.2f fps", frameRate);
     windowTitle(txt);
   }
@@ -66,5 +57,9 @@ class LocalFrame extends PApplet {
     synchronized (frame) { // Synchronize to avoid concurrent access issues
       frame.copy(canvas, x1, y1, x2 - x1, y2 - y1, 0, 0, w, h);
     }
+  }
+  
+  void disposeFromApp(){
+    parent.dispose();
   }
 }

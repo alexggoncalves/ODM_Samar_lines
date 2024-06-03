@@ -1,29 +1,29 @@
 final boolean FULLSCREEN = true;
-final int MAIN_SCREEN = 0;
-final int SECONDARY_SCREEN = 1;
+final int MAIN_SCREEN = 1;
+final int SECONDARY_SCREEN = 2;
 
 LocalFrame localFrame;
 Tracking tracking;
 Canvas canvas;
 
-float canvasScale = 7;
-int frameWidth = 480;
-int frameHeight = 270;
+float canvasScale = 1.5;
+float frameScale = 0.2;
+
+int windowedWidth = 1920;
+int windowedHeight = 1080;
 
 void settings(){
   if(FULLSCREEN){
-    fullScreen(P2D,SECONDARY_SCREEN);
+    fullScreen(P2D,MAIN_SCREEN);
   } else {
-    size(frameWidth, frameHeight,P2D);
+    size(windowedWidth,windowedHeight,P2D);
   }
 }
 
 void setup(){
-  
+  localFrame = new LocalFrame(this,0,0,0,floor(width *frameScale),floor(height * frameScale));
+  canvas = new Canvas(floor(canvasScale * width),floor(canvasScale * height), localFrame);
   tracking = new Tracking(this);
-  
-  localFrame = new LocalFrame(0,0,0,frameWidth,frameHeight);
-  canvas = new Canvas((int)canvasScale * frameWidth,(int)canvasScale * frameHeight, localFrame);
 }
 
 void draw(){
