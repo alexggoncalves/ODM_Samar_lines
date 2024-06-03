@@ -28,8 +28,9 @@ void setup(){
 
 void draw(){
   background(255,255,255);
-  tracking.receiveData();
+  noStroke();
   canvas.drawCanvas();
+  tracking.receiveData();
 }
 
  void dispose() {

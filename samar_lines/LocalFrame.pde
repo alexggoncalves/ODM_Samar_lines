@@ -32,8 +32,6 @@ class LocalFrame extends PApplet {
     } else {
       size(windowedWidth, windowedHeight);
     }
-    
-    registerMethod("disposeFromApp", this);
    
     smooth(0);
   }
@@ -46,13 +44,25 @@ class LocalFrame extends PApplet {
     synchronized (frame) { // Synchronize to avoid concurrent access issues
       image(frame, 0, 0, width, height);
     } 
+    
+    drawDebug();
+    
     String txt = String.format("Frame   %6.2f fps", frameRate);
     windowTitle(txt);
   }
+  
+  void drawDebug(){
+     PVector[] hands = tracking.getHands();
+     if(hands != null) {
+       for(int i = 0; i < hands.length; i++){
+         ellipse(hands[i].x, hands[i].y, 10,10);
+       }
+     }
+  }
 
   void setFrame(PGraphics canvas, PVector position) {
-    wScale = (float) w/canvas.width;
-    hScale = (float) h/canvas.height;
+    wScale = (float) w/width;
+    hScale = (float) h/height;
     int x1 = round(position.x - w / 2);
     int y1 = round(position.y - h / 2);
     int x2 = round(position.x + w / 2);
@@ -97,17 +107,5 @@ class LocalFrame extends PApplet {
                  destX, destY, destW, destH
       );
     }
-    
-    //if(xOffset1 != 0) {
-    // frame.copy(canvas,
-    //             sourceX, sourceY, sourceW, sourceH,
-    //             destX, destY, destW, destH
-    //  ); 
-    //}
-    
-  }
-  
-  void disposeFromApp(){
-    parent.dispose();
   }
 }
