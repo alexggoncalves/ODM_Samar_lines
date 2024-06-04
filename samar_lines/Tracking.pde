@@ -4,30 +4,23 @@ class Tracking{
   Server server;
   Client client;
   boolean isReceivingData;
-  PVector[] hands = null;
-
+  ArrayList<Hand> hands = new ArrayList<Hand>(0);
+  
   int captureWidth = 0;
   int captureHeight = 0;
   Tracking(PApplet parent){
      server = new Server(parent, 50007); 
   }
-  
   void receiveData(){ 
     client = server.available();
     if (client !=null) {
       isReceivingData = true;
       String receivedData = client.readStringUntil('\n');
       if (receivedData != null) {
-        parseData(receivedData);
+        parseData(receivedData); 
       } 
     } else {
       isReceivingData = false;
-    }
-  }
-  void updateHandPositions(PVector[] receivedHands){
-    
-    if(receivedHands != null){
-         
     }
   }
   
@@ -42,18 +35,52 @@ class Tracking{
     
     
     int handCount = int(values[2]);
-    PVector[] receivedHands = new PVector[handCount];
     
-    for(int i = 0; i<handCount; i++) {
+    // Go through all the hand positions received, create hands and update existing ones
+    for(int i = 0; i < handCount; i++) {
       float x = float(values[3 + i*2]);
       float y = float(values[3 + i*2 + 1]);
+      PVector position = new PVector(x,y);
+      boolean createNew = true;
       
-      receivedHands[i] = new PVector(x,y);
+      for(int j = 0; j < hands.size(); j++) {
+        if(hands.get(j).distanceTo(position) < 80){
+          createNew = false;
+          hands.get(j).updatePosition(position);
+          break;
+        }
+      }
+      
+      if(createNew) {
+       hands.add(new Hand(position)); 
+      }
     }
-      hands = receivedHands.clone();
+    
+    checkHandUpdates();
   }
   
-  PVector[] getHands(){
+  void checkHandUpdates(){
+    ArrayList<Hand> handsToRemove = new ArrayList<Hand>(0);
+    // Check recent updates
+    for(int i = 0; i< hands.size(); i++) {
+      Hand hand = hands.get(i);
+      
+      if(hand.onTimeout){
+        if(hand.isItOver()) handsToRemove.add(hand);
+      } else if(!hand.updated) {
+        hand.startTimeout();
+      } else {
+         hand.updated = false;
+      }
+    }
+    
+    for(int i = 0; i < handsToRemove.size(); i++) {
+      hands.remove(handsToRemove.get(i));
+    }
+    
+  }
+  
+  ArrayList<Hand> getHands(){
     return hands;
   }
   

@@ -1,7 +1,6 @@
 import cv2
 import cvzone
 from cvzone.HandTrackingModule import HandDetector
-from cvzone.FaceDetectionModule import FaceDetector
 import socket
 
 # Parameters
@@ -15,10 +14,7 @@ width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
 height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
 # Hand Detector
-hand_detector = HandDetector(maxHands=10, detectionCon=0.8)
-
-# Face Detector
-face_detector = FaceDetector(minDetectionCon=0.6)
+hand_detector = HandDetector(maxHands=4, detectionCon=0.5)
 
 # Communication
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,8 +34,6 @@ while True:
     success, img = cap.read()
     # Hands
     hands, img = hand_detector.findHands(img, flipType=True)
-    # Face
-    img, faces = face_detector.findFaces(img, draw=False)
 
     data = []
 
@@ -58,25 +52,10 @@ while True:
             # handType = hand["type"]  # Hand Type "Left" or "Right"
             # data.extend([handType])  # 10
 
-    # data.extend([len(faces)])  # 11
-
-    # if faces:
-    #     # Loop through each bounding box
-    #     # face contains 'id', 'bbox', 'score', 'center'
-    #     for face in faces:
-    #         # ---- Get Data  ---- #
-    #         center = face["center"]
-    #         data.extend([center[0], height - center[1]])  # 12 - 13
-    #         x, y, w, h = face['bbox']
-    #         data.extend([x, y, w, h])  # 14 - 17
-    #
-    #         # ---- Draw Data  ---- #
-    #         cvzone.cornerRect(img, (x, y, w, h))
-
     sock.sendto(str.encode(str(data) + '\n'), server_address)
 
     # Uncomment next line to view webcam capture
     cv2.imshow("image", img)
 
     # If it gets to laggy change wait key to 2
-    cv2.waitKey(2)
+    cv2.waitKey(1)
