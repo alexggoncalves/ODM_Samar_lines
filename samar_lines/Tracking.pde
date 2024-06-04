@@ -3,7 +3,7 @@ import processing.net.*;
 class Tracking{
   Server server;
   Client client;
-  boolean isConnected;
+  boolean isReceivingData;
   PVector[] hands = null;
 
   int captureWidth = 0;
@@ -15,33 +15,42 @@ class Tracking{
   void receiveData(){ 
     client = server.available();
     if (client !=null) {
+      isReceivingData = true;
       String receivedData = client.readStringUntil('\n');
       if (receivedData != null) {
         parseData(receivedData);
       } 
+    } else {
+      isReceivingData = false;
+    }
+  }
+  void updateHandPositions(PVector[] receivedHands){
+    
+    if(receivedHands != null){
+         
     }
   }
   
   void parseData(String data){
+    
     data.trim();
     data = data.substring(1,data.length()-2);
     
     String[] values = split(data,", ");
     captureWidth = int(values[0]);
     captureHeight = int(values[1]);
-    hands = null;
+    
+    
     int handCount = int(values[2]);
-    if(handCount > 0){
-      hands = new PVector[handCount];
-    }
+    PVector[] receivedHands = new PVector[handCount];
     
     for(int i = 0; i<handCount; i++) {
       float x = float(values[3 + i*2]);
       float y = float(values[3 + i*2 + 1]);
-      float mappedX = map(x, 0.0, float(captureWidth), float(localFrame.w)/localFrame.wScale,0.0);
-      float mappedY = map(y, 0.0,float(captureHeight),float(localFrame.h)/localFrame.hScale,0.0);
-      hands[i] = new PVector(mappedX,mappedY);
+      
+      receivedHands[i] = new PVector(x,y);
     }
+      hands = receivedHands.clone();
   }
   
   PVector[] getHands(){

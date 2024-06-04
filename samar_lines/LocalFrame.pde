@@ -5,11 +5,12 @@ import java.awt.Rectangle;
 class LocalFrame extends PApplet {
   PApplet parent;
   int id, x, y, w, h;
-  float wScale = 0;
-  float hScale = 0;
+  float wScale = 1;
+  float hScale = 1;
   int bckColor = color(255, 255, 255); // Set a default background color
   
   PImage frame;
+  HandVisualizer handVisualizer;
 
   LocalFrame(PApplet parent, int id, int x, int y, int w, int h) {
     super();
@@ -21,6 +22,7 @@ class LocalFrame extends PApplet {
     this.parent = parent;
     
     frame = createImage(w, h, RGB); // Initialize with the correct size and type
+    handVisualizer = new HandVisualizer(w,h,wScale,hScale);
 
     PApplet.runSketch(new String[] { this.getClass().getName() }, this);
   }
@@ -38,26 +40,15 @@ class LocalFrame extends PApplet {
 
   void draw() {
     background(bckColor);
-    fill(0,255,0);
-    rect(100,100,200,200);
     
+    fill(0,255,0);
     synchronized (frame) { // Synchronize to avoid concurrent access issues
       image(frame, 0, 0, width, height);
+      handVisualizer.drawHandVisualizer(this);
     } 
-    
-    drawDebug();
     
     String txt = String.format("Frame   %6.2f fps", frameRate);
     windowTitle(txt);
-  }
-  
-  void drawDebug(){
-     PVector[] hands = tracking.getHands();
-     if(hands != null) {
-       for(int i = 0; i < hands.length; i++){
-         ellipse(hands[i].x, hands[i].y, 10,10);
-       }
-     }
   }
 
   void setFrame(PGraphics canvas, PVector position) {

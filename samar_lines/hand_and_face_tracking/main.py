@@ -45,38 +45,38 @@ while True:
 
     data.extend([int(width)])  # 0
     data.extend([int(height)])  # 1
-
-    data.extend([len(hands)])  # 3
+    data.extend([len(hands)])  # 2
 
     if hands:
         for hand in hands:
-
             centerPoint = hand['center']  # center of the hand cx,cy
-            data.extend([centerPoint[0], height - centerPoint[1]])  # 4 - 5
+            data.extend([centerPoint[0], height - centerPoint[1]])  # 3 - 4
 
-            bbox = hand["bbox"]  # Bounding box info x,y,w,h
-            data.extend([bbox[0], height - bbox[1], bbox[2], bbox[3]])  # 6 - 9
+            # bbox = hand["bbox"]  # Bounding box info x,y,w,h
+            # data.extend([bbox[0], height - bbox[1], bbox[2], bbox[3]])  # 6 - 9
 
-            handType = hand["type"]  # Hand Type "Left" or "Right"
-            data.extend([handType])  # 10
+            # handType = hand["type"]  # Hand Type "Left" or "Right"
+            # data.extend([handType])  # 10
 
-    data.extend([len(faces)])  # 11
+    # data.extend([len(faces)])  # 11
 
-    if faces:
-        # Loop through each bounding box
-        # face contains 'id', 'bbox', 'score', 'center'
-        for face in faces:
-            # ---- Get Data  ---- #
-            center = face["center"]
-            data.extend([center[0], height - center[1]])  # 12 - 13
-            x, y, w, h = face['bbox']
-            data.extend([x, y, w, h])  # 14 - 17
-
-            # ---- Draw Data  ---- #
-            cvzone.cornerRect(img, (x, y, w, h))
+    # if faces:
+    #     # Loop through each bounding box
+    #     # face contains 'id', 'bbox', 'score', 'center'
+    #     for face in faces:
+    #         # ---- Get Data  ---- #
+    #         center = face["center"]
+    #         data.extend([center[0], height - center[1]])  # 12 - 13
+    #         x, y, w, h = face['bbox']
+    #         data.extend([x, y, w, h])  # 14 - 17
+    #
+    #         # ---- Draw Data  ---- #
+    #         cvzone.cornerRect(img, (x, y, w, h))
 
     sock.sendto(str.encode(str(data) + '\n'), server_address)
 
+    # Uncomment next line to view webcam capture
     cv2.imshow("image", img)
 
+    # If it gets to laggy change wait key to 2
     cv2.waitKey(2)

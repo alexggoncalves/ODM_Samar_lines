@@ -36,7 +36,7 @@ class LineGenerator {
   }
 
   void update() {
-    if (tracking.isConnected) {
+    if (tracking.isReceivingData) {
       tracking.receiveData();
       //-------------------------------------------------
       // set direction based on the position of the hands!!
@@ -85,6 +85,8 @@ class LineGenerator {
     canvas.noStroke();
     canvas.ellipse(position.x, position.y, lineRadius*2, lineRadius*2);
     canvas.endDraw();
+    
+    
   }
   
   void checkBoundaries(){
