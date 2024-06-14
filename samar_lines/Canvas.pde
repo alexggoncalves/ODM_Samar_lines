@@ -3,8 +3,10 @@ class Canvas {
   LocalFrame localFrame;
   LineGenerator line;
   
-  Canvas(int w, int h, LocalFrame localFrame){
-   canvas = createGraphics(w,h); 
+  ArrayList<Shape> shapes;
+  
+  Canvas(LocalFrame localFrame, float canvasScale){
+   canvas = createGraphics(int(width* canvasScale),int(height *canvasScale)); 
    line = new LineGenerator(500,1000);
    this.localFrame = localFrame;
   }
@@ -17,15 +19,12 @@ class Canvas {
     line.render(canvas);
     
     // Draw the canvas
-    image(canvas,0,0,width,height);
-    
+    if(frameCount % 3 == 0){
+      image(canvas,0,0,width,height);
+    }
+
     // Send canvas to the secondary applet -> LocalFrame
     localFrame.setFrame(canvas,line.position);
-    
-    // Draw square around the window
-    //noFill();
-    //stroke(0,0,0);
-    //rect(line.position.x,line.position.y,width/canvasScale,height/canvasScale);
   }
   
   int getWidth(){

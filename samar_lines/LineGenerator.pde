@@ -1,10 +1,10 @@
 class LineGenerator {
   // Movement
   PVector position;
-  float speed = 3;
-  int lineRadius = 10;
-  float turnRate = 0.2f;
-  int turnRadius = 14;
+  float speed = 2;
+  int lineRadius = 8;
+  float turnRate = 0.16f;
+  int turnRadius = 20;
   
   // Directions
   final PVector up = new PVector(0, -1);
@@ -19,7 +19,7 @@ class LineGenerator {
   PVector turnPivotPoint = new PVector(0, 0);
   String rotationDirection = "";
   float rotationAmount = 0;
-  float currenRelativeRotation;
+  float currentRelativeRotation;
   float initialAngle = 0;
 
   // Colors
@@ -51,19 +51,27 @@ class LineGenerator {
     if (isTurning) {
       // Update the relative rotation based on the direction of the rotation
       if(rotationDirection == "clockwise"){
-        currenRelativeRotation -= turnRate;
+        currentRelativeRotation -= turnRate;
       } else {
-        currenRelativeRotation += turnRate;
+        currentRelativeRotation += turnRate;
       }
-      // Update the position based on the turn
-      position.x = turnPivotPoint.x + turnRadius * cos(initialAngle + currenRelativeRotation);
-      position.y = turnPivotPoint.y + turnRadius * sin(initialAngle + currenRelativeRotation);
-
-      // If the curve has rotated enough stop the turn
-      if (abs(currenRelativeRotation) >= abs(rotationAmount)) {
+      
+       // If the curve has rotated enough stop the turn
+      if (abs(currentRelativeRotation) >= abs(rotationAmount)) {
         isTurning = false;
-        currenRelativeRotation = 0; // Reset for next turn
+        if(rotationDirection == "clockwise"){
+           currentRelativeRotation = - rotationAmount;
+        } else {
+           currentRelativeRotation = rotationAmount;
+        }
+       
       }
+      
+      // Update the position based on the turn
+      position.x = turnPivotPoint.x + turnRadius * cos(initialAngle + currentRelativeRotation);
+      position.y = turnPivotPoint.y + turnRadius * sin(initialAngle + currentRelativeRotation);
+
+     
     } else {
       // Move in a straight line
       position.x += currentDirection.x * speed;
@@ -80,10 +88,13 @@ class LineGenerator {
   }
 
   void render(PGraphics canvas) {
+   
     canvas.beginDraw();
-    canvas.fill(currentColor);
-    canvas.noStroke();
-    canvas.ellipse(position.x, position.y, lineRadius*2, lineRadius*2);
+      
+      canvas.fill(currentColor);
+      canvas.noStroke();
+       canvas.ellipseMode(CENTER);
+      canvas.ellipse(position.x, position.y, lineRadius*2, lineRadius*2);
     canvas.endDraw();
     
     
@@ -108,7 +119,7 @@ class LineGenerator {
   void handleTurns() {
     // If the direction changes and the line is not currently turning, start the turn
     if (lastDirection != currentDirection && !isTurning) {
-      currenRelativeRotation = 0;
+      currentRelativeRotation = 0;
       isTurning = true;
 
       float crossProduct = lastDirection.x * currentDirection.y - lastDirection.y * currentDirection.x;
@@ -154,7 +165,7 @@ class LineGenerator {
         currentDirection = down;
       }
       if (key == 'd') {
-        currentDirection = right;
+        currentDirection = right; 
       }
       if (key == 'a') {
         currentDirection = left;

@@ -1,31 +1,37 @@
  
 class HandVisualizer  {
   int w, h;
-  float wScale = 1;
-  float hScale = 1;
+  int displayW;
+  int displayH;
+  float frameScale; 
   
   ArrayList<Hand> hands = null;
   PGraphics canvas;
 
-  HandVisualizer( int w, int h, float wScale, float hScale) {
-    this.w = w;
-    this.h = h;
-    this.wScale = wScale;
-    this.hScale = hScale;
+  HandVisualizer(int displayW, int displayH,  float frameScale) {
+    this.frameScale = frameScale;
+    this.displayW = displayW-1;
+    this.displayH = displayH;
+    this.w = int(displayW * frameScale);
+    this.h = int(displayH * frameScale);
+    
     canvas = createGraphics(w, h);
+    //canvas.noSmooth();
   }
   
-  
-
   void drawHandVisualizer(PApplet frame) {
-    wScale = (float) w/frame.width;
-    hScale = (float) h/frame.height;
     canvas = createGraphics(w, h);
-    canvas.noSmooth();
+    
+    canvas.ellipseMode(CENTER);
     canvas.beginDraw();
       canvas.fill(255,0,255,100);
       canvas.noStroke();
-      canvas.ellipse(w/2,h/2,20,20);
+      canvas.pushMatrix();
+      canvas.translate(w/2,h/2);
+      canvas.ellipse(0,0,16,16);
+      canvas.popMatrix();
+      
+      
       drawHands();
     canvas.endDraw();
    

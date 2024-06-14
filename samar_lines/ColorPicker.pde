@@ -45,7 +45,7 @@ class ColorPicker {
       }
     }
     
-    drawDebug();
+    //drawDebug();
   }
   
   void drawDebug(){
