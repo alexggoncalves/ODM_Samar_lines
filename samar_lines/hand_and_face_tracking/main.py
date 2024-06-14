@@ -14,7 +14,7 @@ width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
 height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
 # Hand Detector
-hand_detector = HandDetector(maxHands=4, detectionCon=0.5)
+hand_detector = HandDetector(maxHands=10, detectionCon=0.5)
 
 # Communication
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

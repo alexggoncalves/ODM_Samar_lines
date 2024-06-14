@@ -11,6 +11,8 @@ class Hand {
   int handRadius = 24;
   int numPoints = 30;
   
+  PVector mappedPosition = new PVector(0,0);
+  
   float noiseOffset = 0;
   
   Hand(PVector position){
@@ -47,14 +49,17 @@ class Hand {
     } else return false;
   }
   
+  PVector getPosition(){
+   return new PVector(x,y); 
+  }
+  
   void drawHand(PGraphics canvas){
-    PVector mappedPosition = mapPosition(canvas.width,0,canvas.height,0);
+    mappedPosition = mapPosition(canvas.width,0,canvas.height,0);
     
     canvas.fill(255,255,255,100);
         
     // Draw blob
     PShape hand = createShape();
-        
     hand.beginShape();
       hand.fill(255,255,255,100);
       float angleStep = TWO_PI / numPoints;
@@ -73,6 +78,6 @@ class Hand {
       hand.endShape(CLOSE);
       canvas.shape(hand,mappedPosition.x,mappedPosition.y);
         
-      noiseOffset += 0.01;
+      noiseOffset += 0.03;
   }
 }

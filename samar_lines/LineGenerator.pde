@@ -1,11 +1,11 @@
 class LineGenerator {
   // Movement
   PVector position;
-  float speed = 2;
-  int lineRadius = 8;
-  float turnRate = 0.16f;
-  int turnRadius = 20;
-  
+  float speed = 1;
+  int lineRadius = 6;
+  float turnRate = PI/30;
+  int turnRadius = lineRadius + 4;
+
   // Directions
   final PVector up = new PVector(0, -1);
   final PVector right = new PVector(1, 0);
@@ -25,6 +25,8 @@ class LineGenerator {
   // Colors
   color currentColor;
   ColorPicker colorPicker;
+  
+  PVector handDirectionVector = new PVector(0,0);
 
   LineGenerator(float initX, float initY) {
     position = new PVector(initX, initY);
@@ -32,89 +34,81 @@ class LineGenerator {
     currentDirection = right;
     lastDirection = right;
     colorPicker = new ColorPicker("resources/gradient.png");
-    
   }
 
   void update() {
     if (tracking.isReceivingData) {
       tracking.receiveData();
-      //-------------------------------------------------
-      // set direction based on the position of the hands!!
-      //-------------------------------------------------
-    } else {
       handleManualDirectionChange();
-    }
+
+    } 
+    handleHandDirectionChange();
+    
 
     // Check for change in direction and set turn parameters
     handleTurns();
-
     if (isTurning) {
       // Update the relative rotation based on the direction of the rotation
-      if(rotationDirection == "clockwise"){
+      if (rotationDirection == "clockwise") {
         currentRelativeRotation -= turnRate;
       } else {
         currentRelativeRotation += turnRate;
       }
-      
-       // If the curve has rotated enough stop the turn
+
+      // If the curve has rotated enough stop the turn
       if (abs(currentRelativeRotation) >= abs(rotationAmount)) {
         isTurning = false;
-        if(rotationDirection == "clockwise"){
-           currentRelativeRotation = - rotationAmount;
+        if (rotationDirection == "clockwise") {
+          currentRelativeRotation = - rotationAmount;
         } else {
-           currentRelativeRotation = rotationAmount;
+          currentRelativeRotation = rotationAmount;
         }
-       
       }
-      
+
       // Update the position based on the turn
       position.x = turnPivotPoint.x + turnRadius * cos(initialAngle + currentRelativeRotation);
       position.y = turnPivotPoint.y + turnRadius * sin(initialAngle + currentRelativeRotation);
-
-     
     } else {
       // Move in a straight line
       position.x += currentDirection.x * speed;
       position.y += currentDirection.y * speed;
-      
+
       checkBoundaries();
     }
-    
+
     // Set color
     colorPicker.update();
     currentColor = colorPicker.getCurrentColor();
-    
+
     lastDirection = currentDirection;
   }
 
   void render(PGraphics canvas) {
-   
+
     canvas.beginDraw();
-      
-      canvas.fill(currentColor);
-      canvas.noStroke();
-       canvas.ellipseMode(CENTER);
-      canvas.ellipse(position.x, position.y, lineRadius*2, lineRadius*2);
+
+    canvas.fill(currentColor);
+    canvas.noStroke();
+    canvas.ellipseMode(CENTER);
+    canvas.ellipse(position.x, position.y, lineRadius*2, lineRadius*2);
     canvas.endDraw();
-    
-    
   }
-  
-  void checkBoundaries(){
+
+  void checkBoundaries() {
     // Check horizontal boundaries
-    if (position.x - lineRadius > canvas.getWidth()) {
+    if (position.x - lineRadius > fullCanvas.getWidth()) {
       position.x = - lineRadius;
     } else if (position.x + lineRadius < 0) {
-      position.x = canvas.getWidth() + lineRadius;
+      position.x = fullCanvas.getWidth() + lineRadius;
     }
     // Check vertical boundaries
-    if (position.y - lineRadius > canvas.getHeight()) {
+    if (position.y - lineRadius > fullCanvas.getHeight()) {
       position.y = - lineRadius;
     } else if (position.y + lineRadius < 0) {
-      position.y = canvas.getHeight() + lineRadius;
+      position.y = fullCanvas.getHeight() + lineRadius;
     }
   }
-    
+
 
   void handleTurns() {
     // If the direction changes and the line is not currently turning, start the turn
@@ -124,7 +118,7 @@ class LineGenerator {
 
       float crossProduct = lastDirection.x * currentDirection.y - lastDirection.y * currentDirection.x;
       PVector turnPivotVector = new PVector(0, 0);
-      
+
       if (crossProduct > 0) {
         rotationDirection = "counterclockwise";
         rotationAmount = PI / 2;
@@ -137,12 +131,12 @@ class LineGenerator {
         rotationAmount = PI;
         float diceRoll = random(1);
         // If the change in direction is an angle of 180 degrees choose random direction to turn to
-        if(diceRoll < 0.5) {
-           rotationDirection = "clockwise";
-           turnPivotVector = new PVector(lastDirection.y, -lastDirection.x);  // 180 degree right turn
+        if (diceRoll < 0.5) {
+          rotationDirection = "clockwise";
+          turnPivotVector = new PVector(lastDirection.y, -lastDirection.x);  // 180 degree right turn
         } else {
-           rotationDirection = "counterclockwise";
-           turnPivotVector = new PVector(-lastDirection.y, lastDirection.x); // 180 degree left turn
+          rotationDirection = "counterclockwise";
+          turnPivotVector = new PVector(-lastDirection.y, lastDirection.x); // 180 degree left turn
         }
       }
 
@@ -155,6 +149,39 @@ class LineGenerator {
       initialAngle = atan2(temp.y, temp.x); // Correctly calculate the initial angle
     }
   }
+  
+  void handleHandDirectionChange() {
+    PVector temp = handDirectionVector.copy().rotate(PI/4);
+    
+    int angle = floor((temp.heading() + PI)/TWO_PI * 4);
+    
+    PVector newDirection;
+    switch(angle){
+      case 0:
+        newDirection = left;
+        break;
+      case 1:
+        newDirection = up;
+        break;
+       case 2:
+         newDirection = right;
+         break;
+       case 3:
+         newDirection = down;
+         break;
+       default:
+         newDirection = currentDirection;
+         break;
+    }
+    
+    if(newDirection != currentDirection && !isTurning){
+       currentDirection = newDirection; 
+    }
+  }
+  
+  void setHandDirectionVector(PVector direction){
+     this.handDirectionVector = direction.copy();
+  }
 
   void handleManualDirectionChange() {
     if (keyPressed && !isTurning) {
@@ -165,7 +192,7 @@ class LineGenerator {
         currentDirection = down;
       }
       if (key == 'd') {
-        currentDirection = right; 
+        currentDirection = right;
       }
       if (key == 'a') {
         currentDirection = left;
