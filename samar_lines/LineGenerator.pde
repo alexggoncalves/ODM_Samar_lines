@@ -25,8 +25,8 @@ class LineGenerator {
   // Colors
   color currentColor;
   ColorPicker colorPicker;
-  
-  PVector handDirectionVector = new PVector(0,0);
+
+  PVector handDirectionVector = new PVector(0, 0);
 
   LineGenerator(float initX, float initY) {
     position = new PVector(initX, initY);
@@ -37,13 +37,9 @@ class LineGenerator {
   }
 
   void update() {
-    if (tracking.isReceivingData) {
-      tracking.receiveData();
-      handleManualDirectionChange();
-
-    } 
+    tracking.receiveData();
+    handleManualDirectionChange();
     handleHandDirectionChange();
-    
 
     // Check for change in direction and set turn parameters
     handleTurns();
@@ -149,38 +145,40 @@ class LineGenerator {
       initialAngle = atan2(temp.y, temp.x); // Correctly calculate the initial angle
     }
   }
-  
+
   void handleHandDirectionChange() {
-    PVector temp = handDirectionVector.copy().rotate(PI/4);
-    
-    int angle = floor((temp.heading() + PI)/TWO_PI * 4);
-    
-    PVector newDirection;
-    switch(angle){
+    if (tracking.hands.size()>0) {
+      PVector temp = handDirectionVector.copy().rotate(PI/4);
+
+      int angle = floor((temp.heading() + PI)/TWO_PI * 4);
+
+      PVector newDirection;
+      switch(angle) {
       case 0:
         newDirection = left;
         break;
       case 1:
         newDirection = up;
         break;
-       case 2:
-         newDirection = right;
-         break;
-       case 3:
-         newDirection = down;
-         break;
-       default:
-         newDirection = currentDirection;
-         break;
-    }
-    
-    if(newDirection != currentDirection && !isTurning){
-       currentDirection = newDirection; 
+      case 2:
+        newDirection = right;
+        break;
+      case 3:
+        newDirection = down;
+        break;
+      default:
+        newDirection = currentDirection;
+        break;
+      }
+
+      if (newDirection != currentDirection && !isTurning) {
+        currentDirection = newDirection;
+      }
     }
   }
-  
-  void setHandDirectionVector(PVector direction){
-     this.handDirectionVector = direction.copy();
+
+  void setHandDirectionVector(PVector direction) {
+    this.handDirectionVector = direction.copy();
   }
 
   void handleManualDirectionChange() {

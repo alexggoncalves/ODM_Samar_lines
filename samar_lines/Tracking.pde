@@ -37,21 +37,27 @@ class Tracking {
 
     // Go through all the hand positions received, create hands and update existing ones
     for (int i = 0; i < handCount; i++) {
-      float x = float(values[3 + i*2]);
-      float y = float(values[3 + i*2 + 1]);
+      float x = float(values[3 + 4*i]);
+      float y = float(values[3 + 4*i + 1]);
       PVector position = new PVector(x, y);
+      
+      float handWidth = float(values[3 + 4*i + 2]);
+      float handHeight = float(values[3 + 4*i + 3]);
+      float handSize = sqrt(handWidth*handHeight);
+      
       boolean createNew = true;
 
       for (int j = 0; j < hands.size(); j++) {
         if (hands.get(j).distanceTo(position) < 80) {
           createNew = false;
-          hands.get(j).updatePosition(position);
+          hands.get(j).setPosition(position);
+          hands.get(j).setSize(handSize);
           break;
         }
       }
 
       if (createNew) {
-        hands.add(new Hand(position));
+        hands.add(new Hand(position,handSize));
       }
     }
 

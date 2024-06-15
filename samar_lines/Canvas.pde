@@ -5,8 +5,6 @@ class Canvas {
 
   ArrayList<Shape> shapes;
   
-  
-
   Canvas(LocalFrame localFrame, float canvasScale) {
     canvas = createGraphics(int(width * canvasScale), int(height * canvasScale));
     line = new LineGenerator(500, 1000);
@@ -46,8 +44,8 @@ class Canvas {
   }
   
   void addShape(){
-    int x = round(random(line.position.x - localFrame.w/2,line.position.x + localFrame.w/2));
-    int y = round(random(line.position.y - localFrame.h/2,line.position.x + localFrame.h/2));
+    int x = round(random(line.position.x - (0.9*localFrame.w/2),line.position.x + (0.9*localFrame.w/2)));
+    int y = round(random(line.position.y - (0.9*localFrame.h/2),line.position.y + (0.9*localFrame.h/2)));
     
     PVector position = new PVector(x,y);
     Shape s = new Shape(position, line.currentColor, 4,4);

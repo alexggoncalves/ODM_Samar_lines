@@ -46,7 +46,10 @@ while True:
             centerPoint = hand['center']  # center of the hand cx,cy
             data.extend([centerPoint[0], height - centerPoint[1]])  # 3 - 4
 
-            # bbox = hand["bbox"]  # Bounding box info x,y,w,h
+            bbox = hand["bbox"]  # Bounding box info x,y,w,h
+            hand_width = bbox[2]
+            hand_height = bbox[3]
+            data.extend([hand_width,hand_height])   # 5 - 6
             # data.extend([bbox[0], height - bbox[1], bbox[2], bbox[3]])  # 6 - 9
 
             # handType = hand["type"]  # Hand Type "Left" or "Right"

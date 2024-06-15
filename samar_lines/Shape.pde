@@ -14,12 +14,12 @@ class Shape {
 
   Shape(PVector position, color shapeColor, int radius, int ringWidth) {
     this.position = position;
-    this.radius = radius;
+    this.radius = int(random(4,10));
     this.initialAngle = random(0, TWO_PI);
     this.angle = initialAngle;
     this.shapeColor = shapeColor;
     this.totalTurnAmount = ceil(random(1, 4)) * HALF_PI;
-    this.ringWidth = ringWidth;
+    this.ringWidth = this.radius;
   }
 
   void drawShape(PGraphics canvas) {

@@ -8,23 +8,29 @@ class Hand {
   final int timeOutTime = 10;
   int timeOutStart = 0;
   
-  int handRadius = 24;
+  float handSize;
+  float handSizeMultiplier = 0.1;
   int numPoints = 30;
   
   PVector mappedPosition = new PVector(0,0);
   
   float noiseOffset = 0;
   
-  Hand(PVector position){
+  Hand(PVector position, float size){
+    this.x = position.x;
+    this.y = position.y;
+    this.handSize = size;
+    updated = true;
+  }
+  
+  void setPosition(PVector position){
     this.x = position.x;
     this.y = position.y;
     updated = true;
   }
   
-  void updatePosition(PVector position){
-    this.x = position.x;
-    this.y = position.y;
-    updated = true;
+  void setSize(float size){
+    this.handSize = size;
   }
   
   float distanceTo(PVector position){
@@ -65,8 +71,8 @@ class Hand {
       float angleStep = TWO_PI / numPoints;
       for (int j = 0; j < numPoints; j++) {
         float angle = j * angleStep;
-        float bx = cos(angle) * handRadius;
-        float by = sin(angle) * handRadius;
+        float bx = cos(angle) * (handSize*handSizeMultiplier);
+        float by = sin(angle) * (handSize*handSizeMultiplier);
     
         // Add some noise to make it look like a blob
         float noiseFactor = map(noise(bx * 0.1 + noiseOffset, by * 0.1 + noiseOffset), 0, 1, 0.5, 1);

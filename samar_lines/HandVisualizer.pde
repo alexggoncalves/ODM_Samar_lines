@@ -6,7 +6,7 @@ class HandVisualizer {
 
   ArrayList<Hand> hands = null;
   PGraphics canvas;
-
+  
   LineGenerator line = null;
 
   PVector averageHandVector = new PVector(0, 0);
@@ -34,10 +34,10 @@ class HandVisualizer {
     canvas.noStroke();
     canvas.pushMatrix();
     canvas.translate(w/2, h/2);
-    canvas.ellipse(0, 0, 8, 8);
+    //canvas.ellipse(0, 0, 8, 8);
     canvas.strokeWeight(4);
     canvas.stroke(255, 255, 255);
-    canvas.line(0, 0, averageHandVector.x, averageHandVector.y);
+    //canvas.line(0, 0, averageHandVector.x, averageHandVector.y);
     canvas.popMatrix();
 
 

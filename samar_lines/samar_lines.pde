@@ -24,7 +24,6 @@ void settings() {
 }
 
 void setup() {
-  
   localFrame = new LocalFrame(this, 0, 0, 0, frameScale);
   fullCanvas = new Canvas(localFrame, canvasScale);
   tracking = new Tracking(this);
