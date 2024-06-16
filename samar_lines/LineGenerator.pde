@@ -1,10 +1,12 @@
 class LineGenerator {
   // Movement
   PVector position;
-  float speed = 1;
-  int lineRadius = 6;
-  float turnRate = PI/30;
-  int turnRadius = lineRadius + 4;
+  float speed = 2;
+  float lineRadius = 7;
+  float turnRate = PI/14;
+  float turnRadius = lineRadius + 4;
+  
+  long lastFrame = millis();
 
   // Directions
   final PVector up = new PVector(0, -1);
@@ -40,6 +42,9 @@ class LineGenerator {
     tracking.receiveData();
     handleManualDirectionChange();
     handleHandDirectionChange();
+    
+    long thisFrame = millis();
+    float secondsElapsed = (thisFrame-lastFrame)/1000.0;
 
     // Check for change in direction and set turn parameters
     handleTurns();
@@ -66,8 +71,8 @@ class LineGenerator {
       position.y = turnPivotPoint.y + turnRadius * sin(initialAngle + currentRelativeRotation);
     } else {
       // Move in a straight line
-      position.x += currentDirection.x * speed;
-      position.y += currentDirection.y * speed;
+      position.x += round(currentDirection.x * speed);
+      position.y += round(currentDirection.y * speed);
 
       checkBoundaries();
     }
@@ -77,12 +82,12 @@ class LineGenerator {
     currentColor = colorPicker.getCurrentColor();
 
     lastDirection = currentDirection;
+    lastFrame = thisFrame;
   }
 
   void render(PGraphics canvas) {
-
     canvas.beginDraw();
-
+    canvas.blendMode(REPLACE);
     canvas.fill(currentColor);
     canvas.noStroke();
     canvas.ellipseMode(CENTER);
@@ -117,11 +122,11 @@ class LineGenerator {
 
       if (crossProduct > 0) {
         rotationDirection = "counterclockwise";
-        rotationAmount = PI / 2;
+        rotationAmount = HALF_PI;
         turnPivotVector = new PVector(-lastDirection.y, lastDirection.x); // 90 degree left turn
       } else if (crossProduct < 0) {
         rotationDirection = "clockwise";
-        rotationAmount = PI / 2;
+        rotationAmount = HALF_PI;
         turnPivotVector = new PVector(lastDirection.y, -lastDirection.x); // 90 degree right turn
       } else if (crossProduct == 0) {
         rotationAmount = PI;
@@ -148,7 +153,7 @@ class LineGenerator {
 
   void handleHandDirectionChange() {
     if (tracking.hands.size()>0) {
-      PVector temp = handDirectionVector.copy().rotate(PI/4);
+      PVector temp = handDirectionVector.copy().rotate(QUARTER_PI);
 
       int angle = floor((temp.heading() + PI)/TWO_PI * 4);
 

@@ -25,9 +25,7 @@ class HandVisualizer {
     if (line == null) {
       line = fullCanvas.line;
     }
-
-    canvas = createGraphics(w, h);
-
+    
     canvas.ellipseMode(CENTER);
     canvas.beginDraw();
     canvas.fill(255, 0, 255, 100);
@@ -39,10 +37,6 @@ class HandVisualizer {
     canvas.stroke(255, 255, 255);
     //canvas.line(0, 0, averageHandVector.x, averageHandVector.y);
     canvas.popMatrix();
-
-
-    canvas.pushMatrix();
-
     drawHands();
     handleDirectionChange();
     canvas.endDraw();

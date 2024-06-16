@@ -50,7 +50,7 @@ while True:
             hand_width = bbox[2]
             hand_height = bbox[3]
             data.extend([hand_width,hand_height])   # 5 - 6
-            # data.extend([bbox[0], height - bbox[1], bbox[2], bbox[3]])  # 6 - 9
+            # data.extend([bbox[0], height - bbox[1], bbox[2], bbox[3]])  # 6 - 9w
 
             # handType = hand["type"]  # Hand Type "Left" or "Right"
             # data.extend([handType])  # 10

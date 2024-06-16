@@ -7,7 +7,8 @@ class LocalFrame extends PApplet {
   float frameScale;
   int displayW;
   int displayH;
-  int bckColor = color(0, 0, 0);
+  color bckColor = color(0, 0, 0);
+  color edgesColor = color(255, 255, 255);
 
   PImage frame;
   HandVisualizer handVisualizer;
@@ -23,84 +24,93 @@ class LocalFrame extends PApplet {
 
     PApplet.runSketch(new String[] { this.getClass().getName() }, this);
 
-    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    GraphicsDevice[] screens = ge.getScreenDevices();
+    if (FULLSCREEN) {
+      GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      GraphicsDevice[] screens = ge.getScreenDevices();
 
-    if (screens.length >= SCREEN_INDEX) {
-      displayW = screens[SCREEN_INDEX - 1].getDisplayMode().getWidth();
-      displayH = screens[SCREEN_INDEX - 1].getDisplayMode().getHeight();
-      w  = int(displayW * frameScale);
-      h  = int(displayH * frameScale);
+      if (screens.length >= SCREEN_INDEX) {
+        
+        displayW = screens[SCREEN_INDEX - 1].getDisplayMode().getWidth();
+        displayH = screens[SCREEN_INDEX - 1].getDisplayMode().getHeight();
+        frameScale = frameScale * (float(baseWidth)/float(displayW));
+        
+        w  = round(displayW * frameScale);
+        h  = round(displayH * frameScale);
+      }
+    } else {
+      displayW = windowedWidth;
+      displayH = windowedHeight;
+      w = round(displayW * frameScale);
+      h = round(displayH * frameScale);
     }
 
+
     frame = createImage(w, h, ARGB);
-    handVisualizer = new HandVisualizer(displayW, displayH, frameScale);
+    handVisualizer = new HandVisualizer(width, height, frameScale);
   }
 
   void settings() {
     if (FULLSCREEN) {
       fullScreen(SCREEN_INDEX);
+      this.smooth(0);
+      
     } else {
-      size(displayW / 2, displayH / 2);
+      size(windowedWidth,windowedHeight);
     }
-    smooth(0);
+    
   }
-
+  
 
   void draw() {
     background(bckColor);
     fill(0, 255, 0);
-    synchronized (frame) { // Synchronize to avoid concurrent access issues
-      image(frame, 0, 0, displayW, displayH);
-      handVisualizer.drawHandVisualizer(this);
-    }
+
+    image(frame, 0, 0, displayW, displayH);
+    handVisualizer.drawHandVisualizer(this);
+
     String txt = String.format("Frame %6.2f fps", frameRate);
     surface.setTitle(txt);
   }
 
   void setFrame(PGraphics canvas, PVector position) {
+    // Top left corner of the view (source canvas)
     int x1 = round(position.x - w / 2);
     int y1 = round(position.y - h / 2);
-    int x2 = round(position.x + w / 2);
-    int y2 = round(position.y + h / 2);
+    float brightnessMultiplier = float(mouseX)/float(width);
+    
+    color backgroundColor = color(255-(brightnessMultiplier * 255));
 
-    int xOffset1 = 0;
-    int xOffset2 = 0;
+    //frame.loadPixels();
+    for (int x = 0; x < w; x++) {
+      for (int y = 0; y < h; y++) {
+        
+        int frameIndex = x + y * w;
+        int sourceX = x1 + x;
+        int sourceY = y1 + y;
+        
+        frame.pixels[frameIndex] = backgroundColor;
 
-    if (x1 < 0) {
-      xOffset1 = -x1;
-      x1 = 0;
-    } else if (x2 > canvas.width) {
-      xOffset2 = x2 - canvas.width;
-      x2 = canvas.width;
-    }
-
-    int yOffset1 = 0;
-    int yOffset2 = 0;
-    if (y1 < 0) {
-      yOffset1 = -y1;
-      y1 = 0;
-    } else if (y2 > canvas.height) {
-      yOffset2 = y2 - canvas.height;
-      y2 = canvas.height;
-    }
-
-    int sourceX = x1;
-    int sourceY = y1;
-    int sourceW = x2 - x1;
-    int sourceH = y2 - y1;
-
-    int destX = round(xOffset1);
-    int destY = round(yOffset1);
-    int destW = w - round((xOffset1 + xOffset2));
-    int destH = h - ((yOffset1 + yOffset2));
-
-
-
-    if (frame != null) {
-      synchronized (frame) { // Synchronize to avoid concurrent access issues
-        frame.copy(canvas, sourceX, sourceY, sourceW, sourceH, destX, destY, destW, destH);
+        if (sourceX >= 0 && sourceX < canvas.width && sourceY >= 0 && sourceY < canvas.height) {
+          color c = canvas.get(sourceX, sourceY);
+          color noTransparencyColor = color(red(c),green(c),blue(c),255);
+          
+          
+          //frame.pixels[frameIndex] = c;
+          
+          float brightness = (red(noTransparencyColor) + green(noTransparencyColor) + blue(noTransparencyColor)) / 3;
+          
+          
+          if (brightness > 0.1) {
+            frame.pixels[frameIndex] = color(brightnessMultiplier*red(noTransparencyColor),brightnessMultiplier*green(noTransparencyColor),brightnessMultiplier*blue(noTransparencyColor),alpha(c)* brightnessMultiplier);
+          } else {
+            //frame.pixels[frameIndex] = 
+           }
+        } else {
+          // If the source coordinates are outside the canvas, use the edges color
+          frame.pixels[frameIndex] = backgroundColor;
+        }
       }
     }
+    frame.updatePixels();
   }
 }

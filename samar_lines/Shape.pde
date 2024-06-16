@@ -12,7 +12,7 @@ class Shape {
 
   boolean toDelete = false;
 
-  Shape(PVector position, color shapeColor, int radius, int ringWidth) {
+  Shape(PVector position, color shapeColor) {
     this.position = position;
     this.radius = int(random(4,10));
     this.initialAngle = random(0, TWO_PI);
@@ -37,5 +37,9 @@ class Shape {
     } else {
       toDelete = true;
     }
+  }
+  
+  boolean isToDelete(){
+   return toDelete; 
   }
 }

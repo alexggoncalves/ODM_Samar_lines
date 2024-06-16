@@ -6,10 +6,13 @@ class Canvas {
   ArrayList<Shape> shapes;
   
   Canvas(LocalFrame localFrame, float canvasScale) {
+    canvasScale = canvasScale * (float(baseWidth)/float(width));
     canvas = createGraphics(int(width * canvasScale), int(height * canvasScale));
-    line = new LineGenerator(500, 1000);
+    line = new LineGenerator(round(random(width/4, width-width/4)), round(random(height/5, height-height/5)));
     this.localFrame = localFrame;
     shapes = new ArrayList<Shape>();
+    canvas.smooth(8);
+    
   }
 
   void drawCanvas() {
@@ -23,7 +26,7 @@ class Canvas {
     handleShapes();
 
     // Draw the canvas
-    if (frameCount % 10 == 0) {
+    if (frameCount % 1 == 0) {
       background(canvasBackground);
       image(canvas,0,0,width,height);
     }
@@ -48,7 +51,7 @@ class Canvas {
     int y = round(random(line.position.y - (0.9*localFrame.h/2),line.position.y + (0.9*localFrame.h/2)));
     
     PVector position = new PVector(x,y);
-    Shape s = new Shape(position, line.currentColor, 4,4);
+    Shape s = new Shape(position, line.currentColor);
     
     shapes.add(s);
   }
