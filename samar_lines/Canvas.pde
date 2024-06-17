@@ -6,9 +6,9 @@ class Canvas {
   ArrayList<Shape> shapes;
   
   Canvas(LocalFrame localFrame, float canvasScale) {
+    line = new LineGenerator(round(random(width/4, width-width/4)), round(random(height/5, height-height/5)));
     canvasScale = canvasScale * (float(baseWidth)/float(width));
     canvas = createGraphics(int(width * canvasScale), int(height * canvasScale));
-    line = new LineGenerator(round(random(width/4, width-width/4)), round(random(height/5, height-height/5)));
     this.localFrame = localFrame;
     shapes = new ArrayList<Shape>();
     canvas.smooth(8);
@@ -26,10 +26,8 @@ class Canvas {
     handleShapes();
 
     // Draw the canvas
-    if (frameCount % 1 == 0) {
-      background(canvasBackground);
-      image(canvas,0,0,width,height);
-    }
+    background(canvasBackground);
+    image(canvas,0,0,width,height);
 
     // Send canvas to the secondary applet -> LocalFrame
     localFrame.setFrame(canvas, line.position);

@@ -26,26 +26,26 @@ class ColorPicker {
   }
 
   void update() {
-    if (millis() - lastTransition >= randomTimeInterval) {
-      isInTransition = true;
+    if (localFrame.currentTransitionValue !=0) {
+      if (millis() - lastTransition >= randomTimeInterval) {
+        isInTransition = true;
 
-      lastTransition = millis();
-      randomTimeInterval = getRandomTimeInterval();
-    }
+        lastTransition = millis();
+        randomTimeInterval = getRandomTimeInterval();
+      }
 
-    if (isInTransition) {
-      gradientPosition += transitionRate;
-      if (gradientPosition >= 1) gradientPosition = 0;
+      if (isInTransition) {
+        gradientPosition += transitionRate;
+        if (gradientPosition >= 1) gradientPosition = 0;
 
-      transitionProgress += transitionRate;
+        transitionProgress += transitionRate;
 
-      if (transitionProgress >= gradientStep) {
-        isInTransition = false;
-        transitionProgress = 0;
+        if (transitionProgress >= gradientStep) {
+          isInTransition = false;
+          transitionProgress = 0;
+        }
       }
     }
-
-    //drawDebug();
   }
 
   void drawDebug() {

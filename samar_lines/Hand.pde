@@ -15,6 +15,7 @@ class Hand {
   PVector mappedPosition = new PVector(0,0);
   
   float noiseOffset = 0;
+  PVector headingVector = new PVector(0,0);
   
   Hand(PVector position, float size){
     this.x = position.x;

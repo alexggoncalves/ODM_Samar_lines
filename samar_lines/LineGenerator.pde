@@ -1,6 +1,8 @@
 class LineGenerator {
   // Movement
+  boolean isMoving = true;
   PVector position;
+  float speedMultiplier;
   float speed = 2;
   float lineRadius = 7;
   float turnRate = PI/14;
@@ -44,7 +46,6 @@ class LineGenerator {
     handleHandDirectionChange();
     
     long thisFrame = millis();
-    float secondsElapsed = (thisFrame-lastFrame)/1000.0;
 
     // Check for change in direction and set turn parameters
     handleTurns();
@@ -71,8 +72,8 @@ class LineGenerator {
       position.y = turnPivotPoint.y + turnRadius * sin(initialAngle + currentRelativeRotation);
     } else {
       // Move in a straight line
-      position.x += round(currentDirection.x * speed);
-      position.y += round(currentDirection.y * speed);
+      position.x += round(currentDirection.x * speed * speedMultiplier);
+      position.y += round(currentDirection.y * speed * speedMultiplier);
 
       checkBoundaries();
     }
@@ -87,11 +88,12 @@ class LineGenerator {
 
   void render(PGraphics canvas) {
     canvas.beginDraw();
-    canvas.blendMode(REPLACE);
-    canvas.fill(currentColor);
-    canvas.noStroke();
-    canvas.ellipseMode(CENTER);
-    canvas.ellipse(position.x, position.y, lineRadius*2, lineRadius*2);
+      canvas.blendMode(REPLACE);
+      canvas.fill(currentColor);
+      canvas.noStroke();
+      canvas.ellipseMode(CENTER);
+    
+      canvas.ellipse(position.x, position.y, lineRadius*2, lineRadius*2);
     canvas.endDraw();
   }
 
@@ -108,6 +110,10 @@ class LineGenerator {
     } else if (position.y + lineRadius < 0) {
       position.y = fullCanvas.getHeight() + lineRadius;
     }
+  }
+  
+  void setSpeedMultiplier(float speedMultiplier){
+    this.speedMultiplier = speedMultiplier;
   }
 
 
@@ -184,6 +190,10 @@ class LineGenerator {
 
   void setHandDirectionVector(PVector direction) {
     this.handDirectionVector = direction.copy();
+  }
+  
+  boolean isMoving(){
+   return isMoving; 
   }
 
   void handleManualDirectionChange() {

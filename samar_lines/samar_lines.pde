@@ -8,7 +8,7 @@ Canvas fullCanvas;
 color canvasBackground = color(255, 255, 255);
 
 float canvasScale = 1.4;
-float frameScale = 0.14;
+float frameScale = 0.2;
 int baseWidth = 2560;
 int windowedWidth = 1920;
 int windowedHeight = 1080;
@@ -27,7 +27,6 @@ void setup() {
   tracking = new Tracking(this);
   localFrame = new LocalFrame(this, 0, 0, 0, frameScale);
   fullCanvas = new Canvas(localFrame, canvasScale);
-  
 }
 
 void draw() {
@@ -47,6 +46,8 @@ void dispose() {
   super.dispose();
 }
 
-void mousePressed(){
- fullCanvas.addShape(); 
+void keyPressed(){
+  if(key == 'b' && localFrame.currentTransitionValue > 0.5){
+    fullCanvas.addShape();
+  }
 }

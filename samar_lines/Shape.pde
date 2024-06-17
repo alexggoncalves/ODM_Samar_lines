@@ -18,18 +18,21 @@ class Shape {
     this.initialAngle = random(0, TWO_PI);
     this.angle = initialAngle;
     this.shapeColor = shapeColor;
-    this.totalTurnAmount = ceil(random(1, 4)) * HALF_PI;
+    this.totalTurnAmount = floor(random(1, 4)) * HALF_PI;
     this.ringWidth = this.radius;
   }
 
   void drawShape(PGraphics canvas) {
     if (turnAmount < totalTurnAmount) {
       canvas.beginDraw();
-      float x = position.x + radius * cos(angle);
-      float y = position.y + radius * sin(angle);
-      canvas.fill(shapeColor);
-      canvas.ellipseMode(CENTER);
-      canvas.ellipse(x, y, ringWidth, ringWidth);
+        canvas.pushMatrix();
+          canvas.translate(position.x,position.y);
+          canvas.rotate(angle);
+          canvas.translate(radius,0);
+          canvas.rectMode(CENTER);
+          canvas.fill(shapeColor);
+          canvas.rect(0,0,ringWidth,5,1);
+        canvas.popMatrix();
       canvas.endDraw();
 
       angle += turnRate;
