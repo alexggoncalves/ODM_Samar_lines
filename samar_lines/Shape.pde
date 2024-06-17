@@ -14,7 +14,7 @@ class Shape {
 
   Shape(PVector position, color shapeColor) {
     this.position = position;
-    this.radius = int(random(4,10));
+    this.radius = int(random(6,14));
     this.initialAngle = random(0, TWO_PI);
     this.angle = initialAngle;
     this.shapeColor = shapeColor;

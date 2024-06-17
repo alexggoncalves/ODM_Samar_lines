@@ -6,7 +6,7 @@ class LocalFrame extends PApplet {
   PApplet parent;
   int displayW, displayH;
   int id, x, y;
-  static final int SCREEN_INDEX = 2;
+  static final int SCREEN_INDEX = 1;
 
   // Frame
   PImage frame;
@@ -79,63 +79,63 @@ class LocalFrame extends PApplet {
   }
 
   void draw() {
-    if (line == null) line = fullCanvas.line;
-    background(bckColor);
+    if (fullCanvas != null) {
+      if (line == null) line = fullCanvas.line  ;
+      background(bckColor);
 
-    // Check if there are any hands and handle movement/color transition
-    handleHandPresence();
-    line.setSpeedMultiplier(currentTransitionValue);
+      // Check if there are any hands and handle movement/color transition
+      handleHandPresence();
+      line.setSpeedMultiplier(currentTransitionValue);
 
-    // Draw elements
-    fill(0, 255, 0);
+      // Draw elements
+      fill(0, 255, 0);
 
-    image(frame, 0, 0, displayW, displayH);
+      image(frame, 0, 0, displayW, displayH);
 
-    handVisualizer.drawHandVisualizer(this);
-    String txt = String.format("Frame %6.2f fps", frameRate);
-    surface.setTitle(txt);
-    
+      handVisualizer.drawHandVisualizer(this);
+      String txt = String.format("Frame %6.2f fps", frameRate);
+      surface.setTitle(txt);
+    }
   }
 
   void handleHandPresence() {
-  if (tracking.hands.size() == 0 && movementDetected && !onTransition) {
-    movementDetected = false;
-    lastHandDetectionTime = millis();
-  } 
-  else if (tracking.hands.size() > 0) {
-    movementDetected = true;
-    if (!onTransition) {
+    if (tracking.hands.size() == 0 && movementDetected && !onTransition) {
+      movementDetected = false;
+      lastHandDetectionTime = millis();
+    } else if (tracking.hands.size() > 0) {
+      movementDetected = true;
+      if (!onTransition) {
+        initialTransitionValue = currentTransitionValue;
+        transitionTargetValue = 1;
+        transitionStart = millis();
+        onTransition = true;
+      }
+    }
+
+    // If no hand has been seen for the timeout duration, start stopping transition
+    if (millis() - lastHandDetectionTime >= inactivityTimeout && !onTransition) {
       initialTransitionValue = currentTransitionValue;
-      transitionTargetValue = 1;
+      transitionTargetValue = 0;
       transitionStart = millis();
       onTransition = true;
     }
-  }
 
-  // If no hand has been seen for the timeout duration, start stopping transition
-  if (millis() - lastHandDetectionTime >= inactivityTimeout && !onTransition) {
-    initialTransitionValue = currentTransitionValue;
-    transitionTargetValue = 0;
-    transitionStart = millis();
-    onTransition = true;
-  }
+    // Apply the transition when it's active
+    if (onTransition) {
+      float elapsedTime = millis() - transitionStart;
+      float t = elapsedTime / transitionDuration;
+      t = constrain(t, 0, 1);
+      float easedT = easeInOut(t);
+      currentTransitionValue = lerp(initialTransitionValue, transitionTargetValue, easedT);
 
-  // Apply the transition when it's active
-  if (onTransition) {
-    float elapsedTime = millis() - transitionStart;
-    float t = elapsedTime / transitionDuration;
-    t = constrain(t, 0, 1);
-    float easedT = easeInOut(t);
-    currentTransitionValue = lerp(initialTransitionValue, transitionTargetValue, easedT);
-
-    // Check if transition is complete before setting onTransition to false
-    if ((transitionTargetValue == 1 && currentTransitionValue >= 1) ||
+      // Check if transition is complete before setting onTransition to false
+      if ((transitionTargetValue == 1 && currentTransitionValue >= 1) ||
         (transitionTargetValue == 0 && currentTransitionValue <= 0)) {
-      currentTransitionValue = transitionTargetValue;
-      onTransition = false;
+        currentTransitionValue = transitionTargetValue;
+        onTransition = false;
+      }
     }
   }
-}
 
 
   void setFrame(PGraphics canvas, PVector position) {

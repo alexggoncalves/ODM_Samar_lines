@@ -1,5 +1,5 @@
 final boolean FULLSCREEN = true;
-final int MAIN_SREEN_INDEX = 1;
+final int MAIN_SREEN_INDEX = 2;
 
 LocalFrame localFrame;
 Tracking tracking;

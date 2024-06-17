@@ -51,7 +51,7 @@ while True:
             hand_height = bbox[3]
             data.extend([hand_width,hand_height])   # 5 - 6
 
-    # send data to processing
+    # send data to processingbbbb
     sock.sendto(str.encode(str(data) + '\n'), server_address)
 
     # Uncomment next line to view webcam capture
