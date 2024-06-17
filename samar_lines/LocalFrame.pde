@@ -94,6 +94,7 @@ class LocalFrame extends PApplet {
     handVisualizer.drawHandVisualizer(this);
     String txt = String.format("Frame %6.2f fps", frameRate);
     surface.setTitle(txt);
+    
   }
 
   void handleHandPresence() {
@@ -162,7 +163,7 @@ class LocalFrame extends PApplet {
           }
         } else {
           // If the source coordinates are outside the canvas, use the edges color
-          frame.pixels[frameIndex] = backgroundColor;
+          frame.pixels[frameIndex] = color(255);
         }
       }
     }

@@ -20,7 +20,6 @@ void settings() {
   } else {
     size(windowedWidth, windowedHeight, P2D);
   }
-  //noSmooth();
 }
 
 void setup() {

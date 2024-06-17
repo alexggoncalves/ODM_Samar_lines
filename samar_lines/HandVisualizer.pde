@@ -29,7 +29,7 @@ class HandVisualizer {
 
     visualizer.beginDraw();
       visualizer.clear();
-      visualizer.background(255, 0, 0, 0); // Fully transparent background
+      visualizer.background(255, 0, 0, 0);
       drawHands();
       drawHandInfluence();
     visualizer.endDraw();
@@ -94,10 +94,10 @@ class HandVisualizer {
   // Draw the hand influence visualizer
   visualizer.shape(circle, w / 2, h / 2);
   
-  // Draw a circle on top to cover center of circle
+  // Draw a circle on top to cover center of circle or not
   visualizer.noStroke();
   visualizer.fill(red(line.currentColor)*localFrame.currentTransitionValue,green(line.currentColor)*localFrame.currentTransitionValue,blue(line.currentColor)*localFrame.currentTransitionValue);
-  visualizer.ellipse(w/2,h/2,line.lineRadius * 2,line.lineRadius * 2);
+  //visualizer.ellipse(w/2,h/2,line.lineRadius * 2,line.lineRadius * 2);
 }
 
   void handleDirectionChange() {
